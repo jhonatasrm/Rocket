@@ -5,13 +5,16 @@
 
 package org.mozilla.focus.activity;
 
+import android.annotation.TargetApi;
 import android.app.PendingIntent;
+import android.app.PictureInPictureParams;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -211,7 +214,23 @@ public class MainActivity extends LocaleAwareAppCompatActivity implements Fragme
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
 
+        tryEnterPictureInPictureMode();
+
+
         saveTabsToPersistence();
+    }
+
+    private void tryEnterPictureInPictureMode() {
+        if(Build.VERSION.SDK_INT < 24) {
+            return;
+        }
+        final BrowserFragment browserFragment = getBrowserFragment();
+        if (browserFragment == null) {
+            return;
+        }
+        if (browserFragment.isFullScreen()) {
+            enterPictureInPictureMode(new PictureInPictureParams.Builder()..build());
+        }
     }
 
     @Override

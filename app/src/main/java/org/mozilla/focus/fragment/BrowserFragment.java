@@ -349,7 +349,9 @@ public class BrowserFragment extends LocaleAwareFragment implements View.OnClick
 
     @Override
     public void onPause() {
-        tabsSession.pause();
+        if(!isFullScreen()) {
+            tabsSession.pause();
+        }
         super.onPause();
         if (screenshotObserver != null) {
             screenshotObserver.stop();
@@ -494,6 +496,10 @@ public class BrowserFragment extends LocaleAwareFragment implements View.OnClick
                 fileChooseAction = null;
             }
         }
+    }
+
+    public boolean isFullScreen() {
+        return fullscreenCallback != null;
     }
 
     public void onCaptureClicked() {
