@@ -27,6 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/website_icon"
         android:layout_toStartOf="@+id/close_button"
+        android:background="@drawable/round_rectangle_ripple"
         android:orientation="vertical"
         android:layout_centerVertical="true">
         <TextView

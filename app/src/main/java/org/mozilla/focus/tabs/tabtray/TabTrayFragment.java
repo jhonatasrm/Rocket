@@ -72,6 +72,7 @@ public class TabTrayFragment extends DialogFragment implements TabTrayContract.V
     private TabsSession tabsSession;
 
     private View newTabBtn;
+    private View closeAllTabsBtn;
     private View logoMan;
 
     private View backgroundView;
@@ -149,6 +150,7 @@ public class TabTrayFragment extends DialogFragment implements TabTrayContract.V
         View view = inflater.inflate(R.layout.fragment_tab_tray, container, false);
         recyclerView = view.findViewById(R.id.tab_tray);
         newTabBtn = view.findViewById(R.id.new_tab_button);
+        closeAllTabsBtn = view.findViewById(R.id.btn_close_all_tabs);
         backgroundView = view.findViewById(R.id.root_layout);
         logoMan = backgroundView.findViewById(R.id.logo_man);
         return view;
@@ -167,6 +169,7 @@ public class TabTrayFragment extends DialogFragment implements TabTrayContract.V
         initRecyclerView();
 
         newTabBtn.setOnClickListener(this);
+        closeAllTabsBtn.setOnClickListener(this);
         setupTapBackgroundToExpand();
 
         view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -187,7 +190,13 @@ public class TabTrayFragment extends DialogFragment implements TabTrayContract.V
             case R.id.new_tab_button:
                 onNewTabClicked();
                 break;
-
+            case R.id.btn_close_all_tabs:
+                for (int i = tabsSession.getTabsCount() - 1; i >= 0; i--) {
+                    presenter.tabCloseClicked(i);
+                }
+                ScreenNavigator.get(getContext()).popToHomeScreen(false);
+                postOnNextFrame(dismissRunnable);
+                break;
             default:
                 break;
         }
