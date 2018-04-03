@@ -107,6 +107,7 @@ public class MainActivity extends LocaleAwareAppCompatActivity implements Fragme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // TODO: check extra and log for app_launch_source telemetry
 
         asyncInitialize();
 
@@ -236,6 +237,8 @@ public class MainActivity extends LocaleAwareAppCompatActivity implements Fragme
     @Override
     protected void onNewIntent(Intent unsafeIntent) {
         final SafeIntent intent = new SafeIntent(unsafeIntent);
+
+        // TODO: check extra and log for app_launch_source telemetry
 
         if (runPromotionFromIntent(intent)) {
             // Don't run other promotion or other action if we already displayed above promotion

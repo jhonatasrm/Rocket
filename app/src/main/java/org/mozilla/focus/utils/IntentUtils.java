@@ -36,6 +36,7 @@ public class IntentUtils {
     public static final String EXTRA_IS_INTERNAL_REQUEST = "is_internal_request";
     public static final String EXTRA_OPEN_NEW_TAB = "open_new_tab";
     public static final String EXTRA_SHOW_RATE_DIALOG = "show_rate_dialog";
+    public static final String EXTRA_FROM_EXTERNAL_APPS = "extra_from_external_apps";
 
     public static final String EXTRA_NOTIFICATION_ACTION_RATE_STAR = "ex_no_action_rate_star";
     public static final String EXTRA_NOTIFICATION_ACTION_FEEDBACK = "ex_no_action_feedback";
