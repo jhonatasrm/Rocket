@@ -134,7 +134,7 @@ public class Browsers {
             intent.setData(uri);
             intent.setPackage(browser.packageName);
 
-            final ResolveInfo info = packageManager.resolveActivity(intent, 0);
+            final ResolveInfo info = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
             if (info == null || info.activityInfo == null) {
                 continue;
             }

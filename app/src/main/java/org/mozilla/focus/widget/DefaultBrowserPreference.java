@@ -7,8 +7,11 @@ package org.mozilla.focus.widget;
 
 import android.annotation.TargetApi;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.preference.Preference;
 import android.util.AttributeSet;
@@ -61,7 +64,14 @@ public class DefaultBrowserPreference extends Preference {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             openDefaultAppsSettings(context);
         } else {
-            openSumoPage(context);
+//            openSumoPage(context);
+            context.getPackageManager().setComponentEnabledSetting(new ComponentName(context, "org.mozilla.focus.activity.WelcomeActivity"), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            String url = SupportUtils.getSumoURLForTopic(context, "rocket-default");
+            intent.setData(Uri.parse(url));
+            context.startActivity(intent);
+            context.getPackageManager().setComponentEnabledSetting(new ComponentName(context, "org.mozilla.focus.activity.WelcomeActivity"), PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
+
         }
     }
 
