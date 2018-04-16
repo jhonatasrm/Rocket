@@ -312,6 +312,11 @@
     <!-- Remove Top site item -->
     <string name="remove">Remove</string>
 
+    <!-- Privacy update notification -->
+    <string name="notification_privacy_policy_update">Privacy policy update</string>
+    <string name="notification_privacy_policy_update_action">Tap here to learn more about the changes.</string>
+
+
     <!--In-app Promotion, Rate the App-->
     <string name="rate_app_dialog_text_title">Love {{app_name}}?</string>
     <string name="rate_app_dialog_text_content">Thank you for choosing our product. Your feedback is important to us.</string>
