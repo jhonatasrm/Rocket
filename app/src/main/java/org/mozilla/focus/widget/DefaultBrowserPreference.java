@@ -66,6 +66,7 @@ public class DefaultBrowserPreference extends Preference {
     @Override
     protected void onClick() {
         final Context context = getContext();
+        final String component = "org.mozilla.focus.activity.WelcomeActivity";
 
 
 
@@ -81,6 +82,7 @@ public class DefaultBrowserPreference extends Preference {
 // method 1 ====== just like UC Browser =====
 // this will open the app setting for current default browser, so you can revoke it.
 // the second time you click it, it'll show a chooser to let users make as default
+// TODO: Show a dialog first to give users more context what to do next (e.g. revoke default, and set again)
 //        Browsers browsers = new Browsers(getContext(), "https://mozilla.org");
 //        if (Browsers.isDefaultBrowser(context)) {
 //            if (browsers.getDefaultBrowser() != null) {
@@ -96,54 +98,25 @@ public class DefaultBrowserPreference extends Preference {
 //            }
 //
 //        }
-//
-//        final String component = "org.mozilla.focus.activity.WelcomeActivity";
-//        final boolean componentEnabled = isComponentEnabled(context.getPackageManager(), context.getPackageName(), component);
-//        if (componentEnabled) {
-//            context.getPackageManager().setComponentEnabledSetting(new ComponentName(context, component), PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
-//
-//        } else {
-//            context.getPackageManager().setComponentEnabledSetting(new ComponentName(context, component), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-//
-//        }
 
 // method 2 ====== This is wired. There'll be more than one default browser if you
 // first choose A browser then choose B browser =====
-//        PackageManager p = context.getPackageManager();
-//        ComponentName cN = new ComponentName(c, component);
-//        p.setComponentEnabledSetting(cN,
-//                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-//                PackageManager.DONT_KILL_APP);
-//
-//        Intent selector = new Intent(Intent.ACTION_VIEW);
-//        selector.addCategory(Intent.CATEGORY_BROWSABLE);
-//        selector.addCategory(Intent.CATEGORY_DEFAULT);
-//        selector.setData(Uri.parse("https://google.com"));
-//        context.startActivity(selector);
-//        p.setComponentEnabledSetting(cN,
-//                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-//                PackageManager.DONT_KILL_APP);
+        // this must be a http since we use http scheme to determine default browser
+        final String defaultBrowserUrl = "http://www.mozilla.org";
+        final PackageManager p = context.getPackageManager();
+        final ComponentName cN = new ComponentName(context, component);
+        p.setComponentEnabledSetting(cN,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP);
 
-        // method 3 ==== I'd prefer this one
-        final String component = "org.mozilla.focus.activity.WelcomeActivity";
-        final PackageManager packageManager = context.getPackageManager();
+        final Intent selector = new Intent(Intent.ACTION_VIEW);
+        selector.setData(Uri.parse(defaultBrowserUrl));
+        context.startActivity(selector);
+        p.setComponentEnabledSetting(cN,
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                PackageManager.DONT_KILL_APP);
 
-        // if the component is enabled, disable it.
-        if (isComponentEnabled(packageManager, context.getPackageName(), component)) {
-            // this should never happen
-            // context.getPackageManager().setComponentEnabledSetting(new ComponentName(context, component), PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
-        } else {
-            context.getPackageManager().setComponentEnabledSetting(new ComponentName(context, component), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-            // we'll wait for setting activity's BroadcastReceiver to try set as default again.
-        }
 
-    }
-
-    public static void makeUsDefaultByOpenAnUrl(Context context) {
-        final String sumo = SupportUtils.getSumoURLForTopic(context, "rocket-default");
-        final Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(sumo));
-        context.startActivity(i);
     }
 
     private void openDefaultAppsSettings(Context context) {
@@ -159,45 +132,6 @@ public class DefaultBrowserPreference extends Preference {
     private void openSumoPage(Context context) {
         final Intent intent = InfoActivity.getIntentFor(context, SupportUtils.getSumoURLForTopic(context, "rocket-default"), getTitle().toString());
         context.startActivity(intent);
-    }
-
-    public static boolean isComponentEnabled(PackageManager pm, String pkgName, String clsName) {
-        ComponentName componentName = new ComponentName(pkgName, clsName);
-        int componentEnabledSetting = pm.getComponentEnabledSetting(componentName);
-
-        switch (componentEnabledSetting) {
-            case PackageManager.COMPONENT_ENABLED_STATE_DISABLED:
-                return false;
-            case PackageManager.COMPONENT_ENABLED_STATE_ENABLED:
-                return true;
-            case PackageManager.COMPONENT_ENABLED_STATE_DEFAULT:
-            default:
-                // We need to get the application info to get the component's default state
-                try {
-                    PackageInfo packageInfo = pm.getPackageInfo(pkgName, PackageManager.GET_ACTIVITIES
-                            | PackageManager.GET_RECEIVERS
-                            | PackageManager.GET_SERVICES
-                            | PackageManager.GET_PROVIDERS
-                            | PackageManager.GET_DISABLED_COMPONENTS);
-
-                    List<ComponentInfo> components = new ArrayList<>();
-                    if (packageInfo.activities != null) Collections.addAll(components, packageInfo.activities);
-                    if (packageInfo.services != null) Collections.addAll(components, packageInfo.services);
-                    if (packageInfo.providers != null) Collections.addAll(components, packageInfo.providers);
-
-                    for (ComponentInfo componentInfo : components) {
-                        if (componentInfo.name.equals(clsName)) {
-                            return componentInfo.isEnabled();
-                        }
-                    }
-
-                    // the component is not declared in the AndroidManifest
-                    return false;
-                } catch (PackageManager.NameNotFoundException e) {
-                    // the package isn't installed on the device
-                    return false;
-                }
-        }
     }
 
 }

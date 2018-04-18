@@ -24,9 +24,7 @@
         <activity
             android:name="org.mozilla.focus.activity.WelcomeActivity"
             android:enabled="false"
-            android:exported="true"
-            android:icon="@drawable/notification_rating"
-            android:label="Welcome">
+            android:exported="true">
 
 
             <intent-filter>
@@ -40,6 +38,7 @@
             </intent-filter>
 
         </activity>
+
         <activity
             android:name="org.mozilla.focus.activity.MainActivity"
             android:configChanges="keyboard|keyboardHidden|mcc|mnc|orientation|screenSize|locale|layoutDirection|smallestScreenSize|screenLayout"
