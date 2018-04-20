@@ -9,16 +9,6 @@ apply plugin: 'pmd'
 apply plugin: 'checkstyle'
 apply plugin: 'com.google.gms.oss.licenses.plugin'
 
-buildscript {
-    repositories {
-        maven {
-        }
-    }
-
-    dependencies {
-    }
-}
-
 android {
     compileSdkVersion Versions.compile_sdk
     buildToolsVersion Versions.build_tools
