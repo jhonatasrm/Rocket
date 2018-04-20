@@ -5,10 +5,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.mozilla.focus.R;
 import org.mozilla.focus.activity.MainActivity;
@@ -43,6 +46,10 @@ public class DialogUtils {
         });
 
         View dialogView = LayoutInflater.from(context).inflate(R.layout.layout_rate_app_dialog, (ViewGroup) null);
+
+        final TextView textView = dialogView.findViewById(R.id.rate_app_dialog_textview_title);
+        textView.setText(context.getString(R.string.rate_app_dialog_text_title, context.getString(R.string.app_name)));
+
         dialogView.findViewById(R.id.dialog_rate_app_btn_close).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,6 +112,10 @@ public class DialogUtils {
         });
 
         View dialogView = LayoutInflater.from(context).inflate(R.layout.layout_share_app_dialog, (ViewGroup) null);
+
+        final TextView textView = dialogView.findViewById(R.id.share_app_dialog_textview_title);
+        textView.setText(context.getString(R.string.share_app_dialog_text_title, context.getString(R.string.app_name)));
+
         dialogView.findViewById(R.id.dialog_share_app_btn_close).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,7 +131,7 @@ public class DialogUtils {
                 Intent sendIntent = new Intent(Intent.ACTION_SEND);
                 sendIntent.setType("text/plain");
                 sendIntent.putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.app_name));
-                sendIntent.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_app_promotion_text));
+                sendIntent.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_app_promotion_text, context.getString(R.string.app_name), context.getString(R.string.share_app_google_play_url)));
                 context.startActivity(Intent.createChooser(sendIntent, null));
                 if (dialog != null) {
                     dialog.dismiss();
