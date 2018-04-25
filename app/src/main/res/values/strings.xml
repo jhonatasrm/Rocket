@@ -368,4 +368,5 @@
 
     <!-- Snack bar button that switch the newly loaded background tab to the foreground -->
     <string name="new_background_tab_switch">Switch</string>
+    <string name="preference_default_browser_summary">Changing settings...</string>
 </resources>
