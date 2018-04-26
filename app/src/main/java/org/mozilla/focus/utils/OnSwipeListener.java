@@ -14,6 +14,11 @@ public interface OnSwipeListener {
 
     void onSwipeDown();
 
+    boolean onDoubleClicked();
+
+    void onLongClicked();
+
+
     class OnSwipeListenerAdapter implements OnSwipeListener {
 
         @Override
@@ -35,5 +40,16 @@ public interface OnSwipeListener {
         public void onSwipeDown() {
 
         }
+
+        @Override
+        public boolean onDoubleClicked() {
+            return false;
+        }
+
+        @Override
+        public void onLongClicked() {
+
+        }
+
     }
 }

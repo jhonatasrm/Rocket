@@ -117,7 +117,8 @@ public class HomeFragment extends LocaleAwareFragment implements TopSitesContrac
             }
         });
 
-        SwipeMotionLayout home_container = (SwipeMotionLayout) view.findViewById(R.id.home_container);
+        final SwipeMotionLayout home_container = (SwipeMotionLayout) view.findViewById(R.id.home_container);
+        final HomeScreenBackground backgroundView = (HomeScreenBackground)home_container.findViewById(R.id.home_fragment_background);
         home_container.setOnSwipeListener(new OnSwipeListener.OnSwipeListenerAdapter() {
             @Override
             public void onSwipeUp() {
@@ -127,6 +128,17 @@ public class HomeFragment extends LocaleAwareFragment implements TopSitesContrac
             @Override
             public void onSwipeDown() {
                 fakeInput.performClick();
+            }
+
+            @Override
+            public boolean onDoubleClicked() {
+                backgroundView.switchBackground();
+                return true;
+            }
+
+            @Override
+            public void onLongClicked() {
+                backgroundView.resetBackground();
             }
         });
 

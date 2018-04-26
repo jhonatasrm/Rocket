@@ -35,6 +35,16 @@ public class SwipeMotionDetector implements View.OnTouchListener {
         }
 
         @Override
+        public void onLongPress(MotionEvent e) {
+            onSwipeListener.onLongClicked();
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            return onSwipeListener.onDoubleClicked();
+        }
+
+        @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             boolean result = false;
             float diffY = e2.getY() - e1.getY();
