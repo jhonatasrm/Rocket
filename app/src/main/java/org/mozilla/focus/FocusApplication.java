@@ -5,6 +5,7 @@
 
 package org.mozilla.focus;
 
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 
 import com.squareup.leakcanary.LeakCanary;
@@ -16,6 +17,7 @@ import org.mozilla.focus.screenshot.ScreenshotManager;
 import org.mozilla.focus.search.SearchEngineManager;
 import org.mozilla.focus.telemetry.TelemetryWrapper;
 import org.mozilla.focus.utils.AdjustHelper;
+import org.mozilla.focus.utils.AppConstants;
 
 public class FocusApplication extends LocaleAwareApplication {
 
@@ -30,10 +32,9 @@ public class FocusApplication extends LocaleAwareApplication {
         }
         LeakCanary.install(this);
 
-        PreferenceManager.setDefaultValues(this, R.xml.settings, false);
+        enableStrictMode();
 
-        // Provide different strict mode penalty for ui testing and production code
-//        Inject.enableStrictMode();
+        PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 
         SearchEngineManager.getInstance().init(this);
 
@@ -45,4 +46,22 @@ public class FocusApplication extends LocaleAwareApplication {
         DownloadInfoManager.getInstance().init(this);
 
     }
+
+    public static void enableStrictMode() {
+        if (AppConstants.isReleaseBuild()) {
+            return;
+        }
+
+        final StrictMode.ThreadPolicy.Builder threadPolicyBuilder = new StrictMode.ThreadPolicy.Builder().detectAll();
+        final StrictMode.VmPolicy.Builder vmPolicyBuilder = new StrictMode.VmPolicy.Builder().detectAll();
+
+        threadPolicyBuilder.penaltyLog().penaltyDialog();
+        // Previously we have penaltyDeath() for debug build, but in order to add crashlytics, we can't use it here.
+        // ( crashlytics has untagged Network violation so it always crashes
+        vmPolicyBuilder.penaltyLog();
+
+        StrictMode.setThreadPolicy(threadPolicyBuilder.build());
+        StrictMode.setVmPolicy(vmPolicyBuilder.build());
+    }
+
 }
