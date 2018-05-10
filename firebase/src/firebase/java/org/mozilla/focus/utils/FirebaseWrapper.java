@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
@@ -20,8 +21,6 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
-
-import org.mozilla.firebase.BuildConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,6 +66,7 @@ abstract class FirebaseWrapper {
 
     // Cache threshold for remote config
     private static long remoteConfigCacheExpirationInSeconds = DEFAULT_CACHE_EXPIRATION_IN_SECONDS;
+    private static boolean developerModeEnabled;
 
 
     // get Remote Config string
@@ -140,10 +140,14 @@ abstract class FirebaseWrapper {
 
     private static void initCrashlytics(Context context) {
         try {
-            Fabric.with(context, new Crashlytics());
+            final Fabric fabric = new Fabric.Builder(context)
+                    .kits(new Crashlytics())
+                    .debuggable(developerModeEnabled)           // Enables Crashlytics debugger
+                    .build();
+            Fabric.with(fabric);
             Log.i(TAG, "CrashlyticsInitProvider initialization successful");
         } catch (IllegalStateException e) {
-            Log.e(TAG, "CrashlyticsInitProvider initialization unsuccessfu", e);
+            Log.e(TAG, "CrashlyticsInitProvider initialization unsuccessful", e);
         }
     }
 
@@ -237,7 +241,7 @@ abstract class FirebaseWrapper {
         final FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
         remoteConfig = new WeakReference<>(config);
         final FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                .setDeveloperModeEnabled(developerModeEnabled)
                 .build();
         config.setConfigSettings(configSettings);
         if (instance != null) {
@@ -272,7 +276,23 @@ abstract class FirebaseWrapper {
         });
     }
 
+    static void setDeveloperModeEnabled(boolean developerModeEnabled) {
+        FirebaseWrapper.developerModeEnabled = developerModeEnabled;
+    }
+
     // Client code must implement this method so it's not static here.
     abstract HashMap<String, Object> getRemoteConfigDefault(Context context);
+
+    @Nullable
+    public static String getFcmToken() {
+        try {
+            return FirebaseInstanceId.getInstance().getToken();
+        } catch (Exception e) {
+            // If Firebase is not initialized, getInstance() will throw an exception here
+            // Since  This method is for debugging, return empty string is acceptable
+            Log.e(TAG, "getGcmToken: ", e);
+            return "";
+        }
+    }
 
 }

@@ -11,6 +11,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
+import org.mozilla.focus.telemetry.TelemetryWrapper;
 import org.mozilla.focus.utils.FirebaseHelper;
 
 public class FirebaseHelperProvider extends ContentProvider {
@@ -21,7 +22,9 @@ public class FirebaseHelperProvider extends ContentProvider {
 
     public boolean onCreate() {
         final Context context = this.getContext();
-        FirebaseHelper.init(context);
+        final boolean enable = TelemetryWrapper.isTelemetryEnabled(context);
+
+        FirebaseHelper.init(context, enable);
 
         return true;
     }

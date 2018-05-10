@@ -11,7 +11,6 @@ import android.util.Log;
 
 import org.mozilla.focus.R;
 import org.mozilla.focus.notification.RocketMessagingService;
-import org.mozilla.focus.telemetry.TelemetryWrapper;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -48,29 +47,26 @@ final public class FirebaseHelper extends FirebaseWrapper {
         enablerCallback = callback;
     }
 
-    public static void init(final Context context) {
+    public static void init(final Context context, boolean enabled) {
 
         if (getInstance() == null) {
             initInternal(new FirebaseHelper());
         }
-        bind(context);
+        bind(context, enabled);
     }
 
 
-    public static boolean bind(@NonNull final Context context) {
-
-        final boolean enable = TelemetryWrapper.isTelemetryEnabled(context);
-
-        return enableFirebase(context.getApplicationContext(), enable);
-
-
+    public static boolean bind(@NonNull final Context context, boolean enabled) {
+        return enableFirebase(context.getApplicationContext(), enabled);
     }
 
     // return true if a new runnable is created. otherwise return false.
     // I need this return value for testing (as the return value of bind() method)
     private static boolean enableFirebase(final Context context, final boolean enable) {
 
-        // if the task is already running, we cache the value and skip creating new runnable
+        // if the task is already running, we cache the value in pending, and avoid creating a new AsyncTask.
+        // I use a variable here, instead of keeping a reference to the AsyncTask below and use
+        // its running state as this flag. Cause I'm hesitated to keep a reference to an AsyncTask.
         if (changing) {
             pending = enable;
             return false;
@@ -93,12 +89,13 @@ final public class FirebaseHelper extends FirebaseWrapper {
     // AsyncTask is useful cause we don't need to write a specific idling resource for it.
     public static class BlockingEnabler extends AsyncTask<Void, Void, Void> {
         boolean enable;
-        WeakReference<Context> weakContext;
+        // We only reference application context here. But to make lint happy, I'll use an extra WeakReference for it.
+        WeakReference<Context> weakApplicationContext;
 
         // We only need application context here.
         BlockingEnabler(Context c, boolean state) {
             enable = state;
-            weakContext = new WeakReference<>(c.getApplicationContext());
+            weakApplicationContext = new WeakReference<>(c.getApplicationContext());
 
         }
 
@@ -113,9 +110,15 @@ final public class FirebaseHelper extends FirebaseWrapper {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().build());
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().build());
 
-            if (weakContext == null || weakContext.get() == null) {
+            if (weakApplicationContext == null || weakApplicationContext.get() == null) {
+                // set back the policy if this happened.
+                StrictMode.setThreadPolicy(cachedThreadPolicy);
+                StrictMode.setVmPolicy(cacheVmPolicy);
                 return null;
             }
+            // although we should check for weakApplicationContext.get() every time before we use it,
+            // but since it's an application context so we should be fine here.
+            final Context applicationContext = weakApplicationContext.get();
 
             // this is only for testing. So we can simulate slow network..etc
             final BlockingEnablerCallback callback = FirebaseHelper.enablerCallback;
@@ -123,25 +126,25 @@ final public class FirebaseHelper extends FirebaseWrapper {
                 callback.runDelayOnExecution();
             }
 
-            final Context context = weakContext.get();
+            setDeveloperModeEnabled(AppConstants.isFirebaseBuild());
 
             // make sure we are in the changing state
             changing = true;
 
             // this methods is blocking.
-            updateInstanceId(context, enable);
+            updateInstanceId(applicationContext, enable);
 
-            enableCrashlytics(context, enable);
-            enableAnalytics(context, enable);
-            enableCloudMessaging(context, RocketMessagingService.class.getName(), enable);
-            enableRemoteConfig(context, enable);
+            enableCrashlytics(applicationContext, enable);
+            enableAnalytics(applicationContext, enable);
+            enableCloudMessaging(applicationContext, RocketMessagingService.class.getName(), enable);
+            enableRemoteConfig(applicationContext, enable);
 
             // now firebase has completed state changing,
             changing = false;
             // we'll check if the cached state is the same as our current one. If not, issue
             // a state change again.
             if (pending != null && pending != enable) {
-                enableFirebase(context, pending);
+                enableFirebase(applicationContext, pending);
             } else {
                 // after now, there'll be now pending state.
                 pending = null;

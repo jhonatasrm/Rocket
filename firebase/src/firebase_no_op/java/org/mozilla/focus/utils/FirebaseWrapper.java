@@ -71,6 +71,13 @@ abstract class FirebaseWrapper {
     static void enableRemoteConfig(Context context, boolean enable) {
     }
 
+    static void setDeveloperModeEnabled(boolean developerModeEnabled) {
+    }
+
     // Client code must implement this method so it's not static here.
     abstract HashMap<String, Object> getRemoteConfigDefault(Context context);
+
+    public static String getFcmToken() {
+        return "";
+    }
 }

@@ -32,9 +32,9 @@ public class FocusApplication extends LocaleAwareApplication {
         }
         LeakCanary.install(this);
 
-        enableStrictMode();
-
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
+
+        enableStrictMode();
 
         SearchEngineManager.getInstance().init(this);
 

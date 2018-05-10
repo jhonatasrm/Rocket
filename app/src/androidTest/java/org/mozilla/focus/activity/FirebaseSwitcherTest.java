@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mozilla.focus.R;
 import org.mozilla.focus.helper.ActivityRecreateLeakWatcherIdlingResource;
+import org.mozilla.focus.telemetry.TelemetryWrapper;
 import org.mozilla.focus.utils.AndroidTestUtils;
 import org.mozilla.focus.utils.FirebaseHelper;
 import org.mozilla.focus.widget.TelemetrySwitchPreference;
@@ -109,24 +110,25 @@ public class FirebaseSwitcherTest {
         // I've added some latency to the enabler, in case it runs too fast
         // This is done via BlockingEnabler's interface that IdlingResource implements.
 
+        final boolean enable = TelemetryWrapper.isTelemetryEnabled(context);
         // The state is not changed, but we still want keep the same status and call bind again to kick off the enabler.
         // I use bind() to simulate the click. This is because calling click can't let get the return value
         // of the bind method ( I use it to determine if a new Runnable is created)
-        boolean newRunnableCreated = FirebaseHelper.bind(context);
+        boolean newRunnableCreated = FirebaseHelper.bind(context, enable);
         // Only this time will be true
         // first time, should get true from bind
         assertTrue(newRunnableCreated);
 
         // the successors should return false( not create new runnable)
         // assume below three method calls happens very fast
-        newRunnableCreated = FirebaseHelper.bind(context);
+        newRunnableCreated = FirebaseHelper.bind(context, enable);
         assertFalse(newRunnableCreated);
 
-        newRunnableCreated = FirebaseHelper.bind(context);
+        newRunnableCreated = FirebaseHelper.bind(context, enable);
         // second time, should get false
         assertFalse(newRunnableCreated);
 
-        newRunnableCreated = FirebaseHelper.bind(context);
+        newRunnableCreated = FirebaseHelper.bind(context, enable);
         // third time, should get false
         assertFalse(newRunnableCreated);
 
@@ -134,7 +136,7 @@ public class FirebaseSwitcherTest {
         view.check(matches(isChecked()));
 
         // this time it will be true cause the previous one is done
-        newRunnableCreated = FirebaseHelper.bind(context);
+        newRunnableCreated = FirebaseHelper.bind(context, enable);
 
         // Only this time will be true
         // first time, should get true from bind
