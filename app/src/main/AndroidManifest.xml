@@ -117,7 +117,6 @@
             android:exported="false"
             tools:ignore="ExportedService" />
 
-
         <meta-data
             android:name="android.webkit.WebView.MetricsOptOut"
             android:value="true" />
@@ -175,8 +174,13 @@
             </intent-filter>
         </receiver>
 
+
+        <service
+            android:name="org.mozilla.focus.components.RelocateService"
+            android:exported="false" />
+
         <provider
-            android:name=".provider.FirebaseHelperProvider"
+            android:name="org.mozilla.focus.provider.FirebaseHelperProvider"
             android:authorities="${applicationId}.provider.firebasehelperprovider"
             android:enabled="true"
             android:exported="false"

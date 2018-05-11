@@ -119,8 +119,6 @@ android {
         }
     }
 
-    testBuildType "firebase"
-
     testOptions {
         unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true
