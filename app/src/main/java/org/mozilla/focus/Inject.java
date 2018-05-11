@@ -44,4 +44,22 @@ public class Inject {
         }
 
     }
+
+    public static void enableStrictMode() {
+        if (AppConstants.isReleaseBuild()) {
+            return;
+        }
+
+        final StrictMode.ThreadPolicy.Builder threadPolicyBuilder = new StrictMode.ThreadPolicy.Builder().detectAll();
+        final StrictMode.VmPolicy.Builder vmPolicyBuilder = new StrictMode.VmPolicy.Builder().detectAll();
+
+        threadPolicyBuilder.penaltyLog().penaltyDialog();
+        // Previously we have penaltyDeath() for debug build, but in order to add crashlytics, we can't use it here.
+        // ( crashlytics has untagged Network violation so it always crashes
+        vmPolicyBuilder.penaltyLog();
+
+        StrictMode.setThreadPolicy(threadPolicyBuilder.build());
+        StrictMode.setVmPolicy(vmPolicyBuilder.build());
+    }
+
 }

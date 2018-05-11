@@ -23,7 +23,6 @@ public class FirebaseHelperProvider extends ContentProvider {
     public boolean onCreate() {
         final Context context = this.getContext();
         final boolean enable = TelemetryWrapper.isTelemetryEnabled(context);
-
         FirebaseHelper.init(context, enable);
 
         return true;
