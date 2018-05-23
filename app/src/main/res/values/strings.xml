@@ -387,4 +387,10 @@
 
     <!-- Confirm message shown on the dialog popped after user clicks close-all-tabs button -->
     <string name="tab_tray_close_tabs_dialog_msg">Close all tabs?</string>
+
+    <!--After action screenshot capture-->
+    <string name="after_action_screenshot_edit">Edit</string>
+    <string name="after_action_screenshot_share">Share</string>
+    <string name="after_action_screenshot_open">Open</string>
+
 </resources>

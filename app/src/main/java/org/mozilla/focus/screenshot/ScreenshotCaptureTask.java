@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class ScreenshotCaptureTask extends AsyncTask<Object, Void, String> {
+public class ScreenshotCaptureTask extends AsyncTask<Object, Void, Screenshot> {
 
     private final Context context;
 
@@ -30,7 +30,7 @@ public class ScreenshotCaptureTask extends AsyncTask<Object, Void, String> {
     }
 
     @Override
-    protected String doInBackground(Object... params) {
+    protected Screenshot doInBackground(Object... params) {
         String title = (String) params[0];
         String url = (String) params[1];
         Bitmap content = (Bitmap) params[2];
@@ -39,15 +39,16 @@ public class ScreenshotCaptureTask extends AsyncTask<Object, Void, String> {
 
         try {
             final String path = saveBitmapToStorage(context, "Screenshot_" + sdf.format(new Date(timestamp)), content);
+            Screenshot screenshot = null;
             // Failed to save
             if (!TextUtils.isEmpty(path)) {
                 FileUtils.notifyMediaScanner(context, path);
 
-                Screenshot screenshot = new Screenshot(title, url, timestamp, path);
+                screenshot = new Screenshot(title, url, timestamp, path);
                 ScreenshotManager.getInstance().insert(screenshot, null);
             }
 
-            return path;
+            return screenshot;
         } catch (IOException ex) {
             return null;
         }

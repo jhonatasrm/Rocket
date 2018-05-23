@@ -98,7 +98,7 @@ abstract class FirebaseWrapper {
         return FIREBASE_STRING_DEFAULT;
     }
 
-    static long getRcLong(Context context, String key) {
+    public static long getRcLong(Context context, String key) {
         if (instance == null) {
             Log.e(TAG, "getRcString: failed, FirebaseWrapper not initialized");
             throwRcNotInitException();

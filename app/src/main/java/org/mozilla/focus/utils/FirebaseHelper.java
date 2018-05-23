@@ -36,6 +36,13 @@ final public class FirebaseHelper extends FirebaseWrapper {
     static final String RATE_APP_DIALOG_THRESHOLD = "rate_app_dialog_threshold";
     static final String RATE_APP_NOTIFICATION_THRESHOLD = "rate_app_notification_threshold";
     static final String SHARE_APP_DIALOG_THRESHOLD = "share_app_dialog_threshold";
+    public static final String AFTER_ACTION_SCREENSHOT = "after_action_screenshot";
+
+
+    private static final int AFTER_ACTION_DEFAULT = 0;
+    public static final int AFTER_ACTION_SCREENSHOT_SHARE = AFTER_ACTION_DEFAULT + 1;
+    public static final int AFTER_ACTION_SCREENSHOT_EDIT = AFTER_ACTION_SCREENSHOT_SHARE + 1;
+    public static final int AFTER_ACTION_SCREENSHOT_OPEN = AFTER_ACTION_SCREENSHOT_EDIT + 1;
 
     private HashMap<String, Object> remoteConfigDefault;
     private static boolean changing = false;
@@ -212,6 +219,9 @@ final public class FirebaseHelper extends FirebaseWrapper {
         map.put(FirebaseHelper.RATE_APP_DIALOG_THRESHOLD, DialogUtils.APP_CREATE_THRESHOLD_FOR_RATE_DIALOG);
         map.put(FirebaseHelper.RATE_APP_NOTIFICATION_THRESHOLD, DialogUtils.APP_CREATE_THRESHOLD_FOR_RATE_NOTIFICATION);
         map.put(FirebaseHelper.SHARE_APP_DIALOG_THRESHOLD, DialogUtils.APP_CREATE_THRESHOLD_FOR_SHARE_DIALOG);
+
+        map.put(FirebaseHelper.AFTER_ACTION_SCREENSHOT, AFTER_ACTION_DEFAULT);
+
         return map;
     }
 
