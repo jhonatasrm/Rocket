@@ -315,7 +315,7 @@ tasks.whenTaskAdded { task ->
 // -------------------------------------------------------------------------------------------------
 
 android.applicationVariants.all { variant ->
-    def variantName = variant.getName();
+    def variantName = variant.getName()
 
     print(variantName + ": ")
 
@@ -339,7 +339,8 @@ android.applicationVariants.all { variant ->
                     SystemEnv.firebase_database_url == null || SystemEnv.gcm_defaultSenderId == null ||
                     SystemEnv.google_api_key == null || SystemEnv.google_crash_reporting_api_key == null ||
                     SystemEnv.project_id == null) {
-                throw new GradleException("System variables for Firebase are required here since you are in firebase build type")
+                println("If you want to enable Firebase, please setup your Firebase config local.properties.")
+                println("And run './gradlew setFirebaseEnvVar' to before you compile against firebase build type")
             }
         }
     }
@@ -437,7 +438,7 @@ def getEnabledLocales() {
     def potentialLanguageDirs = resDir.listFiles(new FilenameFilter() {
         @Override
         boolean accept(File dir, String name) {
-            return name.startsWith("values-");
+            return name.startsWith("values-")
         }
     })
 
@@ -518,7 +519,7 @@ def getTranslatedLocales() {
     def potentialLanguageDirs = localesDir.listFiles(new FilenameFilter() {
         @Override
         boolean accept(File dir, String name) {
-            return !name.equals("templates");
+            return !name.equals("templates")
         }
     })
 
@@ -532,7 +533,7 @@ def getTranslatedLocales() {
             case "he":
                 return "iw"
             default:
-                return it;
+                return it
         }
     }.collect {
         return '"' + it + '"'
@@ -642,3 +643,19 @@ afterEvaluate {
     check.dependsOn 'findbugs', 'pmd', 'checkstyle'
 }
 
+task setFirebaseEnvVar() {
+    this.beforeEvaluate {
+
+        // TODO: maybe use a script in tools is better. (may need to have windows and mac version)
+
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+        environment "google_app_id", properties.getProperty("firebase.google_app_id", "123")
+        environment "default_web_client_id", properties.getProperty("firebase.default_web_client_id", "123")
+        environment "firebase_database_url", properties.getProperty("firebase.firebase_database_url", "123")
+        environment "gcm_defaultSenderId", properties.getProperty("firebase.gcm_defaultSenderId", "123")
+        environment "google_api_key", properties.getProperty("firebase.google_api_key", "123")
+        environment "google_crash_reporting_api_key", properties.getProperty("firebase.google_crash_reporting_api_key", "123")
+        environment "project_id", properties.getProperty("firebase.project_id", "123")
+    }
+}
