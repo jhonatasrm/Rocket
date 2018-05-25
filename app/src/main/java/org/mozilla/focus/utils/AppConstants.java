@@ -24,6 +24,14 @@ public final class AppConstants {
         return BUILD_TYPE_FIREBASE.equals(BuildConfig.BUILD_TYPE);
     }
 
+    public static boolean isBuiltWithFirebase() {
+        return isBetaBuild() || isReleaseBuild() || isFirebaseBuild();
+    }
+
+    public static boolean isFirebaseDebuggable() {
+        return isBetaBuild() || isFirebaseBuild();
+    }
+
     public static boolean isReleaseBuild() {
         return BUILD_TYPE_RELEASE.equals(BuildConfig.BUILD_TYPE);
     }
