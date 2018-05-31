@@ -8,9 +8,9 @@
         <shape>
             <gradient
                 android:angle="270"
-                android:startColor="@color/tabTrayBackgroundTop"
-                android:centerColor="@color/tabTrayBackgroundBottom"
-                android:endColor="@color/tabTrayBackgroundBottom" />
+                android:startColor="?color/themeGradientStart"
+                android:centerColor="?color/themeGradientEnd"
+                android:endColor="?color/themeGradientEnd" />
         </shape>
     </item>
 
