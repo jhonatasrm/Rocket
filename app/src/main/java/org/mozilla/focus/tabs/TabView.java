@@ -10,9 +10,11 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.view.View;
 
 import org.mozilla.focus.web.DownloadCallback;
+import org.mozilla.rocket.pwa.PwaPresenter;
 
 public interface TabView {
     class HitTarget {
@@ -66,6 +68,8 @@ public interface TabView {
     boolean isBlockingEnabled();
 
     void performExitFullScreen();
+
+    public void definePwaAction(PwaPresenter pwaPresenter);
 
     void setViewClient(@Nullable TabViewClient viewClient);
 

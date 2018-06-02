@@ -16,7 +16,9 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 public class IOUtils {
@@ -25,8 +27,17 @@ public class IOUtils {
     private static final String HTTP_CACHE_DIR = "http_cache";
 
     public static JSONObject readAsset(Context context, String fileName) throws IOException {
+        return read(context.getAssets().open(fileName), "Corrupt JSON asset (" + fileName + ")");
+    }
+
+    public static JSONObject readUrl(URL url) throws IOException {
+        return read(url.openStream(), "Can't read from URL: (" + url.toString() + ")");
+    }
+
+    private static JSONObject read(InputStream open, String errorMessage) throws IOException {
+
         try (final BufferedReader reader =
-                     new BufferedReader(new InputStreamReader(context.getAssets().open(fileName), StandardCharsets.UTF_8))) {
+                     new BufferedReader(new InputStreamReader(open, StandardCharsets.UTF_8))) {
             final StringBuilder builder = new StringBuilder();
             String line;
 
@@ -36,7 +47,7 @@ public class IOUtils {
 
             return new JSONObject(builder.toString());
         } catch (JSONException e) {
-            throw new AssertionError("Corrupt JSON asset (" + fileName + ")", e);
+            throw new AssertionError(errorMessage, e);
         }
     }
     public static void initHttpCacheDir(Context context) {

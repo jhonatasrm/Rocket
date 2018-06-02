@@ -673,10 +673,15 @@ public class MainActivity extends LocaleAwareAppCompatActivity implements Fragme
         startActivity(Intent.createChooser(shareIntent, getString(R.string.share_dialog_title)));
     }
 
-    private void onAddToHomeClicked() {
+    public void onAddToHomeClicked() {
         final Tab focusTab = getTabsSession().getFocusTab();
         if (focusTab == null) {
             return;
+        }
+        // FIXME: for testing, remove this before merge
+        if (focusTab.getSaveModel().getPwa()!=null){
+            Toast.makeText(this,focusTab.getSaveModel().getPwa().toString(),Toast.LENGTH_LONG).show();
+
         }
         final String url = focusTab.getUrl();
         // If we pin an invalid url as shortcut, the app will not function properly.
@@ -685,12 +690,8 @@ public class MainActivity extends LocaleAwareAppCompatActivity implements Fragme
             return;
         }
         final Bitmap bitmap = focusTab.getFavicon();
-        final Intent shortcut = new Intent(Intent.ACTION_VIEW);
-        shortcut.setClass(this, MainActivity.class);
-        shortcut.setData(Uri.parse(url));
-        shortcut.putExtra(AppLaunchMethod.EXTRA_HOME_SCREEN_SHORTCUT, true);
 
-        ShortcutUtils.requestPinShortcut(this, shortcut, focusTab.getTitle(), url, bitmap);
+        ShortcutUtils.requestPinShortcut(this, focusTab.getTitle(), url, bitmap, false);
     }
 
     @Override

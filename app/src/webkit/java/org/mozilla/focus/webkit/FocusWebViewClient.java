@@ -95,6 +95,7 @@ import org.mozilla.focus.utils.UrlUtils;
     public void onPageFinished(WebView view, final String url) {
         if (viewClient != null) {
             viewClient.onPageFinished(view.getCertificate() != null);
+
         }
         super.onPageFinished(view, url);
 

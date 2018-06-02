@@ -75,6 +75,7 @@ public enum AppLaunchMethod {
 
     public static final String EXTRA_TEXT_SELECTION = "text_selection";
     public static final String EXTRA_HOME_SCREEN_SHORTCUT = "shortcut";
+    public static final String EXTRA_PWA = "pwa";
 
     abstract boolean match(@NonNull SafeIntent intent);
 

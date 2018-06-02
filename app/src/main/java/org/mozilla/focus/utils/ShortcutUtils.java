@@ -13,12 +13,16 @@ import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.pm.ShortcutInfoCompat;
 import android.support.v4.content.pm.ShortcutManagerCompat;
 import android.support.v4.graphics.drawable.IconCompat;
 import android.text.TextUtils;
+
+import org.mozilla.focus.activity.MainActivity;
+import org.mozilla.focus.telemetry.AppLaunchMethod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +33,16 @@ public class ShortcutUtils {
 
 
     // Request pinned shortcut for both API level
-    public static void requestPinShortcut(@NonNull final Context context, @NonNull final Intent shortcutIntent,
-                                          @NonNull final String title, @NonNull final String urlAsShortcutId, final Bitmap bitmap) {
+    public static void requestPinShortcut(@NonNull final Context context,
+                                          @NonNull final String title, @NonNull final String urlAsShortcutId, final Bitmap bitmap, boolean isFullScreen) {
+
+        final Intent shortcutIntent = new Intent(Intent.ACTION_VIEW);
+        shortcutIntent.setClass(context, MainActivity.class);
+        shortcutIntent.setData(Uri.parse(urlAsShortcutId));
+        shortcutIntent.putExtra(AppLaunchMethod.EXTRA_HOME_SCREEN_SHORTCUT, true);
+        if (isFullScreen) {
+            shortcutIntent.putExtra(AppLaunchMethod.EXTRA_PWA, true);
+        }
 
         final Bitmap icon;
         final Resources resources = context.getResources();
@@ -80,7 +92,7 @@ public class ShortcutUtils {
             if (shortcutManager != null) {
                 final List<ShortcutInfo> list = new ArrayList<>();
                 list.add(shortcut.toShortcutInfo());
-                shortcutManager.updateShortcuts(list);
+//                shortcutManager.updateShortcuts(list);
             }
         }
     }

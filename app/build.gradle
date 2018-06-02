@@ -212,6 +212,9 @@ dependencies {
     implementation project(':firebase')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.5'
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.22.5"
+
 
     implementation "com.android.support:support-v4:${Versions.support}"
     implementation "com.android.support:appcompat-v7:${Versions.support}"
@@ -642,4 +645,10 @@ task checkstyle(type: Checkstyle) {
 
 afterEvaluate {
     check.dependsOn 'findbugs', 'pmd', 'checkstyle'
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
 }

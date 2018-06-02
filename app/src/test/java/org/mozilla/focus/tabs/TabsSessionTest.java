@@ -23,6 +23,7 @@ import org.mozilla.focus.persistence.TabModel;
 import org.mozilla.focus.tabs.utils.DefaultTabsChromeListener;
 import org.mozilla.focus.tabs.utils.TabUtil;
 import org.mozilla.focus.web.DownloadCallback;
+import org.mozilla.rocket.pwa.PwaPresenter;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -391,6 +392,10 @@ public class TabsSessionTest {
         @Override
         public void performExitFullScreen() {
 
+        }
+
+        @Override
+        public void definePwaAction(PwaPresenter pwaPresenter) {
         }
 
         @Override

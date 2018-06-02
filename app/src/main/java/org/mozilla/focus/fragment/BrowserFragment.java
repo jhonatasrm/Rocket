@@ -30,6 +30,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -51,7 +52,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 import org.mozilla.focus.R;
+import org.mozilla.focus.activity.MainActivity;
 import org.mozilla.focus.activity.ScreenNavigator;
 import org.mozilla.focus.download.EnqueueDownloadTask;
 import org.mozilla.focus.locale.LocaleAwareFragment;
@@ -74,6 +78,7 @@ import org.mozilla.focus.utils.ColorUtils;
 import org.mozilla.focus.utils.DrawableUtils;
 import org.mozilla.focus.utils.FileChooseAction;
 import org.mozilla.focus.utils.IntentUtils;
+import org.mozilla.focus.utils.ShortcutUtils;
 import org.mozilla.focus.utils.ThreadUtils;
 import org.mozilla.focus.utils.UrlUtils;
 import org.mozilla.focus.web.BrowsingSession;
@@ -83,6 +88,9 @@ import org.mozilla.focus.widget.AnimatedProgressBar;
 import org.mozilla.focus.widget.BackKeyHandleable;
 import org.mozilla.focus.widget.FragmentListener;
 import org.mozilla.focus.widget.TabRestoreMonitor;
+import org.mozilla.rocket.pwa.PwaModel;
+import org.mozilla.rocket.pwa.PwaPresenter;
+import org.mozilla.rocket.pwa.PwaViewContract;
 
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
@@ -91,11 +99,13 @@ import java.util.WeakHashMap;
  * Fragment for displaying the browser UI.
  */
 public class BrowserFragment extends LocaleAwareFragment implements View.OnClickListener,
-        BackKeyHandleable {
+        BackKeyHandleable, PwaViewContract {
 
     public static final String FRAGMENT_TAG = "browser";
 
-    /** Custom data that is passed when calling {@link TabsSession#addTab(String, Bundle)} */
+    /**
+     * Custom data that is passed when calling {@link TabsSession#addTab(String, Bundle)}
+     */
     public static final String EXTRA_NEW_TAB_SRC = "extra_bkg_tab_src";
     public static final int SRC_CONTEXT_MENU = 0;
 
@@ -605,6 +615,38 @@ public class BrowserFragment extends LocaleAwareFragment implements View.OnClick
         }
     }
 
+    static class SnackbarPwaAction implements View.OnClickListener {
+        WeakReference<Context> contextWeakReference;
+        PwaModel pwaModel;
+
+        SnackbarPwaAction(Context context, PwaModel model) {
+            contextWeakReference = new WeakReference<>(context);
+            pwaModel = model;
+
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (contextWeakReference != null && contextWeakReference.get() != null &&
+                    contextWeakReference.get() instanceof MainActivity) {
+                ShortcutUtils.requestPinShortcut(contextWeakReference.get(), pwaModel.getPwaIconName(),
+                        pwaModel.getStart_url(), pwaModel.getIconBitmap(), true);
+
+            }
+
+        }
+    }
+
+    @Override
+    public void notifyPwaReady(@NotNull Tab tab, @NotNull PwaModel pwaModel) {
+        Snackbar pwaSnack = Snackbar.make(browserContainer,
+                "PWA READY", Snackbar.LENGTH_SHORT);
+        // FIXME: Move pinShortcut to another class
+        final Context context = BrowserFragment.this.getContext();
+        pwaSnack.setAction("Add to Home Screen", new SnackbarPwaAction(context, pwaModel)).show();
+
+    }
+
     public interface LoadStateListener {
         void isLoadingChanged(boolean isLoading);
     }
@@ -795,9 +837,9 @@ public class BrowserFragment extends LocaleAwareFragment implements View.OnClick
     }
 
     /**
-     * @param url target url
-     * @param openNewTab whether to load url in a new tab or not
-     * @param isFromExternal if this url is started from external VIEW intent
+     * @param url                 target url
+     * @param openNewTab          whether to load url in a new tab or not
+     * @param isFromExternal      if this url is started from external VIEW intent
      * @param onViewReadyCallback callback to notify that web view is ready for showing.
      */
     public void loadUrl(@NonNull final String url, boolean openNewTab,
@@ -1085,6 +1127,10 @@ public class BrowserFragment extends LocaleAwareFragment implements View.OnClick
                 backgroundTransition.startTransition(ANIMATION_DURATION);
 
                 siteIdentity.setImageLevel(isSecure ? SITE_LOCK : SITE_GLOBE);
+
+                if (tab.getTabView() != null) {
+                    tab.getTabView().definePwaAction(new PwaPresenter(tab, BrowserFragment.this));
+                }
             }
             historyInserter.onTabFinished(tab);
         }

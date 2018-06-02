@@ -12,6 +12,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
@@ -39,6 +40,7 @@ import org.mozilla.focus.utils.UrlUtils;
 import org.mozilla.focus.web.Download;
 import org.mozilla.focus.web.DownloadCallback;
 import org.mozilla.focus.web.WebViewProvider;
+import org.mozilla.rocket.pwa.PwaPresenter;
 
 public class WebkitView extends NestedWebView implements TabView {
     private static final String KEY_CURRENTURL = "currenturl";
@@ -229,6 +231,28 @@ public class WebkitView extends NestedWebView implements TabView {
     @Override
     public void performExitFullScreen() {
         evaluateJavascript("(function() { return document.webkitExitFullscreen(); })();", null);
+    }
+
+    @Override
+    public void definePwaAction(PwaPresenter pwaPresenter) {
+        evaluateJavascript(
+                "(function() { " +
+                        "" +
+                        "var links = document.getElementsByTagName('link'); \n" +
+                        "\n" +
+                        "   for (var i=0; i<links.length; i++) { \n" +
+                        "      if (links[i].getAttribute(\"rel\") == \"manifest\") { \n" +
+                        "         return links[i].getAttribute(\"href\"); \n" +
+                        "      } \n" +
+                        "   } " +
+                        "" +
+                        "" +
+                        "return (" + PwaPresenter.NOT_PWA + "); })();",
+                result -> {
+                    Log.d("HTML", result);
+                    pwaPresenter.bindTab(getUrl(), result);
+
+                });
     }
 
     @Override

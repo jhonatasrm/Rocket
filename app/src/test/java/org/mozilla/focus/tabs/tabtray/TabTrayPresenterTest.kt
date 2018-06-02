@@ -20,6 +20,7 @@ import org.mockito.Mockito.*
 import org.mozilla.focus.tabs.*
 import org.mozilla.focus.tabs.utils.TabUtil
 import org.mozilla.focus.web.DownloadCallback
+import org.mozilla.rocket.pwa.PwaPresenter
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -89,6 +90,7 @@ class TabTrayPresenterTest {
     }
 
     private class DefaultTabView : TabView {
+        override fun definePwaAction(pwaPresenter: PwaPresenter) {}
 
         private var url: String? = null
 
