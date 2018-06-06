@@ -265,6 +265,10 @@ dependencies {
     releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${Versions.leakcanary}"
     firebaseImplementation "com.squareup.leakcanary:leakcanary-android:${Versions.leakcanary}"
 
+    implementation 'androidx.core:core-ktx:0.3'
+
+    implementation deps.navigation.runtime
+    implementation deps.navigation.fragment
 }
 
 // -------------------------------------------------------------------------------------------------
