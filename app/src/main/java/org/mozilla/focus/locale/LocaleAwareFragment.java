@@ -5,11 +5,11 @@
 
 package org.mozilla.focus.locale;
 
-import android.support.v4.app.Fragment;
-
 import java.util.Locale;
 
-public abstract class LocaleAwareFragment extends Fragment {
+import androidx.navigation.fragment.NavHostFragment;
+
+public abstract class LocaleAwareFragment extends NavHostFragment {
     private Locale cachedLocale = null;
 
     /**
