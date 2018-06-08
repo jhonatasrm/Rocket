@@ -18,6 +18,8 @@ public interface OnSwipeListener {
 
     boolean onDoubleTap();
 
+    boolean onSingleTapConfirmed();
+
     class OnSwipeListenerAdapter implements OnSwipeListener {
 
         @Override
@@ -46,6 +48,11 @@ public interface OnSwipeListener {
 
         @Override
         public boolean onDoubleTap() {
+            return false;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed() {
             return false;
         }
     }
