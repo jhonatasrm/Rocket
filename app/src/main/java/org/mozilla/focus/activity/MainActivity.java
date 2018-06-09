@@ -365,7 +365,6 @@ public class MainActivity extends LocaleAwareAppCompatActivity implements Fragme
         menu.findViewById(R.id.menu_blockimg).setSelected(isBlockingImages());
     }
 
-    @VisibleForTesting
     public BrowserFragment getVisibleBrowserFragment() {
         return screenNavigator.isBrowserInForeground() ? getBrowserFragment() : null;
     }
@@ -591,7 +590,8 @@ public class MainActivity extends LocaleAwareAppCompatActivity implements Fragme
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    private BrowserFragment getBrowserFragment() {
+    @VisibleForTesting
+    public BrowserFragment getBrowserFragment() {
         return (BrowserFragment) getSupportFragmentManager().findFragmentById(R.id.browser);
     }
 
