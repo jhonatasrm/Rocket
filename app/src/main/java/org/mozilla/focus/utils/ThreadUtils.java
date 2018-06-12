@@ -5,6 +5,7 @@
 
 package org.mozilla.focus.utils;
 
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -65,6 +66,32 @@ public class ThreadUtils {
             Thread thread = new Thread(r, threadName + "-" + mNumber.getAndIncrement());
             thread.setPriority(threadPriority);
             return thread;
+        }
+    }
+
+    public static class Async extends AsyncTask<Void, Void, Long> {
+        public interface AsyncBackground{
+            Long run();
+        }
+        public interface AsyncUi{
+            void run(Long result);
+        }
+        AsyncBackground background;
+        AsyncUi ui;
+
+        public Async(AsyncBackground backgroundRunnable, AsyncUi uiRunnable) {
+            background = backgroundRunnable;
+            ui = uiRunnable;
+
+        }
+
+        @Override
+        protected Long doInBackground(Void... voids) {
+            return background.run();
+        }
+        @Override
+        protected void onPostExecute(Long result) {
+            ui.run(result);
         }
     }
 }

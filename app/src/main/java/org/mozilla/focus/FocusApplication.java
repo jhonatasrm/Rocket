@@ -16,6 +16,7 @@ import org.mozilla.focus.screenshot.ScreenshotManager;
 import org.mozilla.focus.search.SearchEngineManager;
 import org.mozilla.focus.telemetry.TelemetryWrapper;
 import org.mozilla.focus.utils.AdjustHelper;
+import org.mozilla.focus.utils.IOUtils;
 
 public class FocusApplication extends LocaleAwareApplication {
 
@@ -43,6 +44,8 @@ public class FocusApplication extends LocaleAwareApplication {
         BrowsingHistoryManager.getInstance().init(this);
         ScreenshotManager.getInstance().init(this);
         DownloadInfoManager.getInstance().init(this);
+
+        IOUtils.initHttpCacheDir(this);
 
     }
 

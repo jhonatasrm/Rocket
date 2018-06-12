@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.WorkerThread;
 import android.webkit.WebStorage;
 
 import org.json.JSONObject;
@@ -197,8 +198,10 @@ public class FileUtils {
         MediaScannerConnection.scanFile(context, new String[]{path}, new String[]{null}, null);
     }
 
+    @WorkerThread
     public static long clearCache(Context context) {
         WebStorage.getInstance().deleteAllData();
+        IOUtils.clearHttpCacheDir();
         return FileUtils.deleteWebViewCacheDirectory(context);
     }
 

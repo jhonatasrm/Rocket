@@ -20,6 +20,7 @@ import org.mozilla.focus.R;
 import org.mozilla.focus.history.BrowsingHistoryManager;
 import org.mozilla.focus.telemetry.TelemetryWrapper;
 import org.mozilla.focus.utils.FileUtils;
+import org.mozilla.focus.utils.ThreadUtils;
 import org.mozilla.focus.utils.TopSitesUtils;
 
 import java.util.Set;
@@ -57,7 +58,9 @@ public class CleanBrowsingDataPreference extends MultiSelectListPreference {
                 } else if (resources.getString(R.string.pref_value_clear_cookies).equals(value)) {
                     CookieManager.getInstance().removeAllCookies(null);
                 } else if (resources.getString(R.string.pref_value_clear_cache).equals(value)) {
-                    FileUtils.clearCache(getContext());
+                    ThreadUtils.postToBackgroundThread(() -> {
+                        FileUtils.clearCache(getContext());
+                    });
                 } else if (resources.getString(R.string.pref_value_clear_form_history).equals(value)) {
                     WebViewDatabase.getInstance(getContext()).clearFormData();
                 }

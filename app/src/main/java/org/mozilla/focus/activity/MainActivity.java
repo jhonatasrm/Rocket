@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.Snackbar;
@@ -71,6 +72,7 @@ import org.mozilla.focus.utils.SafeIntent;
 import org.mozilla.focus.utils.Settings;
 import org.mozilla.focus.utils.ShortcutUtils;
 import org.mozilla.focus.utils.StorageUtils;
+import org.mozilla.focus.utils.ThreadUtils;
 import org.mozilla.focus.utils.UrlUtils;
 import org.mozilla.focus.web.BrowsingSession;
 import org.mozilla.focus.web.WebViewProvider;
@@ -84,6 +86,8 @@ import org.mozilla.rocket.promotion.PromotionViewContract;
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
+
+import javax.crypto.Mac;
 
 public class MainActivity extends LocaleAwareAppCompatActivity implements FragmentListener,
         SharedPreferences.OnSharedPreferenceChangeListener,
@@ -584,11 +588,15 @@ public class MainActivity extends LocaleAwareAppCompatActivity implements Fragme
         showListPanel(ListPanelDialog.TYPE_SCREENSHOTS);
     }
 
+    @UiThread
     private void onDeleteClicked() {
-        final long diff = FileUtils.clearCache(this);
-        final int stringId = (diff < 0) ? R.string.message_clear_cache_fail : R.string.message_cleared_cached;
-        final String msg = getString(stringId, FormatUtils.getReadableStringFromFileSize(diff));
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        new ThreadUtils.Async(
+                () -> FileUtils.clearCache(MainActivity.this),
+                diff -> {
+                    final int stringId = (diff < 0) ? R.string.message_clear_cache_fail : R.string.message_cleared_cached;
+                    final String msg = getString(stringId, FormatUtils.getReadableStringFromFileSize(diff));
+                    Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                }).execute();
     }
 
     private BrowserFragment getBrowserFragment() {
