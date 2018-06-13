@@ -1,9 +1,13 @@
 package org.mozilla.rocket.pwa
 
+import android.arch.lifecycle.Lifecycle
+import android.arch.lifecycle.LifecycleObserver
+import android.arch.lifecycle.OnLifecycleEvent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
@@ -112,9 +116,16 @@ class PwaModel(
 
 }
 
-class PwaPresenter(val tab: Tab, viewContract: PwaViewContract) {
+class PwaPresenter(val tab: Tab, viewContract: PwaViewContract) : LifecycleObserver {
 
-    var pwaViewContract: WeakReference<PwaViewContract> = WeakReference(viewContract)
+    private var pwaViewContract: WeakReference<PwaViewContract> = WeakReference(viewContract)
+    private var job: Job? = null
+
+    // cancel the job if it won't be displayed.
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    fun cancelJob() {
+        job?.cancel()
+    }
 
     companion object {
 
@@ -160,7 +171,7 @@ class PwaPresenter(val tab: Tab, viewContract: PwaViewContract) {
 
         if (path == PwaPresenter.NOT_PWA) return
 
-        launch(UI) {
+        job = launch(UI) {
             try {
 
                 val pwaModel = getPwaModel(host, path)

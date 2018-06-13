@@ -1129,7 +1129,10 @@ public class BrowserFragment extends LocaleAwareFragment implements View.OnClick
                 siteIdentity.setImageLevel(isSecure ? SITE_LOCK : SITE_GLOBE);
 
                 if (tab.getTabView() != null) {
-                    tab.getTabView().definePwaAction(new PwaPresenter(tab, BrowserFragment.this));
+                    final PwaPresenter pwaPresenter = new PwaPresenter(tab, BrowserFragment.this);
+                    tab.getTabView().definePwaAction(pwaPresenter);
+                    getLifecycle().addObserver(pwaPresenter);
+
                 }
             }
             historyInserter.onTabFinished(tab);
